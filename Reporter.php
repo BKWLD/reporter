@@ -6,6 +6,7 @@ use Laravel\Log;
 use Laravel\URI;
 use Laravel\Request;
 
+// Assemble stats and write them to the file
 class Reporter {
 	
 	// Store the output
@@ -40,7 +41,10 @@ class Reporter {
 			$maxlen = 0;
 			foreach(array_keys($_POST) as $key) $maxlen = max($maxlen, strlen($key) + 4);
 			foreach ($_POST as $key => $val) {
-				$this->add(str_pad('  '.$key.': ', $maxlen).wordwrap($val, 72, "\n".str_repeat(' ', $maxlen)));
+				$this->add(
+					Style::wrap('grey', str_pad('  '.$key.': ', $maxlen)).
+					Style::wrap('cyan', wordwrap($val, 72, "\n".str_repeat(' ', $maxlen)))
+				);
 			}
 		}
 		
@@ -48,13 +52,16 @@ class Reporter {
 		if (count($data['queries'])) {
 			$this->format('SQL', count($data['queries']).' queries');
 			foreach($data['queries'] as $query) {
-				$this->add('  ('.$query[1].'ms) '.wordwrap($query[0], 72, "\n           "));
+				$this->add(
+					Style::wrap('grey', '  ('.$query[1].'ms) ').
+					Style::wrap('cyan',wordwrap($query[0], 72, "\n           "))
+				);
 			}
 		}
 		
 		// Display
 		$this->add();
-		$this->add(str_repeat('-', 72));
+		$this->add(Style::wrap('grey', str_repeat('-', 72)));
 		$this->publish();		
 	}
 	
@@ -65,7 +72,10 @@ class Reporter {
 	
 	// Format a line and add it
 	private function format($label, $value='', $pad=11) {
-		$this->add(str_pad($label.':', $pad).$value);
+		$this->add(
+			Style::wrap(array('bold', 'grey'), str_pad($label.':', $pad)).
+			Style::wrap('magenta', $value)
+		);
 	}
 	
 	// Dump the output to disk

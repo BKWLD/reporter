@@ -10,28 +10,29 @@ Reporter is a bundle for Laravel that is an alternative to the built in Profiler
 The output looks like:
 
 ```
-REQUEST:   //momentum.dev/admin/projects/27 (POST)
-TIME:      150.12ms
-MEMORY:    6 MiB (PEAK: 6 MiB)
-POST:     
-  csrf_token: sKFUNhime8BU1LC2cudOeEH60VNMMk6lqQCyf9Ir
-  title:      Barley Coffin Devise
-  client_id:  31
-  slug:       barley-coffin-devisee
-  status:     draft
-SQL:       4 queries
-  (0.29ms) SELECT * FROM `projects` WHERE `id` = '27' LIMIT 1
-  (0.18ms) SELECT * FROM `projects` WHERE `id` = '27' LIMIT 1
-  (0.97ms) SELECT COUNT(*) AS `aggregate` FROM `projects` WHERE `slug` =
-           'barley-coffin-devisee' AND `id` <> '27'
-  (51.23ms) UPDATE `projects` SET `headline` = 'New headline', `updated_at` =
-           '2013-01-08 10:31:32' WHERE `id` = '27'
+2013-01-08 14:17:15 REPORTER - 
 
+REQUEST:   //momentum.dev/admin/users/attach/1 (POST,XHR)
+TIME:      50.70ms
+MEMORY:    5.75 MiB (PEAK: 5.75 MiB)
+POST:      
+  parent_id: 27
+SQL:       2 queries
+  (0.27ms) SELECT * FROM `users` WHERE `id` = '1' LIMIT 1
+  (2.24ms) INSERT INTO `project_user` (`user_id`, `project_id`, `created_at`,
+           `updated_at`) VALUES ('1', '27', '2013-01-08 14:17:15', '2013-01-08
+           14:17:15')
+
+------------------------------------------------------------------------
 ```
+
+Or, if you have style turned on:
+
+![image](http://f.cl.ly/items/0c381c1J1W1d2w1a1k3k/Screen%20Shot%202013-01-08%20at%202.18.50%20PM.png)
 
 Currently the output is inserted into the standard Laravel log location (/storage/logs/yyyy-mm-dd.log).
 
 ## Config
 
-* enable - If false, reporter will not log anything
-
+* `enable` - If false, Reporter will do nothing
+* `style` - Add color and style codes for output in a Terminal
