@@ -13,11 +13,11 @@ REQUEST:   //momentum.dev/admin/projects/27 (POST)
 TIME:      150.12ms
 MEMORY:    6 MiB (PEAK: 6 MiB)
 POST::     
-  csrf_token:      sKFUNhime8BU1LC2cudOeEH60VNMMk6lqQCyf9Ir
-  title:           Barley Coffin Devise
-  client_id:       31
-  slug:            barley-coffin-devisee
-  status:          draft
+  csrf_token: sKFUNhime8BU1LC2cudOeEH60VNMMk6lqQCyf9Ir
+  title:      Barley Coffin Devise
+  client_id:  31
+  slug:       barley-coffin-devisee
+  status:     draft
 SQL::      
   (0.29ms) SELECT * FROM `projects` WHERE `id` = '27' LIMIT 1
   (0.18ms) SELECT * FROM `projects` WHERE `id` = '27' LIMIT 1
