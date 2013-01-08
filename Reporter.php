@@ -22,7 +22,7 @@ class Reporter {
 		if (Request::method() != 'GET') $props[] = Request::method();
 		if (Request::ajax()) $props[] = 'XHR';
 		$props = count($props) ? ' ('.implode(',',$props).')' : null;
-		$this->add('REQUEST:   '.preg_replace('#https?:#', '', URI::full()).$props);
+		$this->format('REQUEST', preg_replace('#https?:#', '', URI::full()).$props);
 
 		// Get the data
 		Profiler::finish();
@@ -36,7 +36,7 @@ class Reporter {
 		
 		// Display POST data
 		if (!empty($_POST)) {
-			$this->format('POST:');
+			$this->format('POST');
 			$maxlen = 0;
 			foreach(array_keys($_POST) as $key) $maxlen = max($maxlen, strlen($key) + 4);
 			foreach ($_POST as $key => $val) {
@@ -46,7 +46,7 @@ class Reporter {
 		
 		// Display queries
 		if (count($data['queries'])) {
-			$this->format('SQL:');
+			$this->format('SQL', count($data['queries']).' queries');
 			foreach($data['queries'] as $query) {
 				$this->add('  ('.$query[1].'ms) '.wordwrap($query[0], 72, "\n           "));
 			}

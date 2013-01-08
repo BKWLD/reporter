@@ -1,10 +1,15 @@
 <?php
 
-// Do nothing if the profiler isn't enbled
-if (!Config::get('application.profiler')) return;
+// Disable
+if (!Config::get('reporter::reporter.enable')) return;
 
-// Imports
+// Dependencies
 Autoloader::namespaces(array('Reporter' => Bundle::path('reporter')));
+
+// Attach built in profiler listeners if it's not turned on
+if (!Config::get('application.profiler')) {
+	Laravel\Profiling\Profiler::attach();
+}
 
 // Listen for request to be done
 Event::listen('laravel.done', function($response) {
