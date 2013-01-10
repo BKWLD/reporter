@@ -23,7 +23,8 @@ class Reporter {
 		if (Request::method() != 'GET') $props[] = Request::method();
 		if (Request::ajax()) $props[] = 'XHR';
 		$props = count($props) ? ' ('.implode(',',$props).')' : null;
-		$this->format('REQUEST', preg_replace('#https?:#', '', URI::full()).$props);
+		$url = preg_replace('#https?:#', '', URI::full());
+		$this->format('REQUEST', wordwrap($url, 72, "\n           ", true).$props);
 
 		// Get the data
 		Profiler::finish();
