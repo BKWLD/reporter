@@ -5,6 +5,7 @@ use Reporter\Profiler;
 use Laravel\Log;
 use Laravel\URI;
 use Laravel\Request;
+use Laravel\Input;
 
 // Assemble stats and write them to the file
 class Reporter {
@@ -37,11 +38,12 @@ class Reporter {
 		$this->format('MEMORY', $data['memory'].' (PEAK: '.$data['memory_peak'].')');
 		
 		// Display POST data
-		if (!empty($_POST)) {
-			$this->format('POST');
+		$input = Input::json() ? (array) Input::json() : Input::get();
+		if (!empty($input)) {
+			$this->format('INPUT');
 			$maxlen = 0;
-			foreach(array_keys($_POST) as $key) $maxlen = max($maxlen, strlen($key) + 4);
-			foreach ($_POST as $key => $val) {
+			foreach(array_keys($input) as $key) $maxlen = max($maxlen, strlen($key) + 4);
+			foreach ($input as $key => $val) {
 				$this->add(
 					Style::wrap('grey', str_pad('  '.$key.': ', $maxlen)).
 					Style::wrap('cyan', wordwrap($val, 72, "\n".str_repeat(' ', $maxlen)))
