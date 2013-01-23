@@ -44,6 +44,7 @@ class Reporter {
 			$maxlen = 0;
 			foreach(array_keys($input) as $key) $maxlen = max($maxlen, strlen($key) + 4);
 			foreach ($input as $key => $val) {
+				if (is_array($val) || is_object($val)) $val = json_encode($val);
 				$this->add(
 					Style::wrap('grey', str_pad('  '.$key.': ', $maxlen)).
 					Style::wrap('cyan', wordwrap($val, 72, "\n".str_repeat(' ', $maxlen)))
