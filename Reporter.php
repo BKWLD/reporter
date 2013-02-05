@@ -34,6 +34,19 @@ class Reporter {
 		// Display execution time
 		$this->format('TIME', $data['time'].'ms');
 		
+		// Display any timers
+		if (!empty($data['timers'])) {
+			$this->format('TIMERS');
+			$maxlen = 0;
+			foreach(array_keys($data['timers']) as $key) $maxlen = max($maxlen, strlen($key) + 4);
+			foreach($data['timers'] as $key => $val) {
+				$this->add(
+					Style::wrap('grey', str_pad('  '.$key.': ', $maxlen)).
+					Style::wrap('cyan', $val['running_time'].'ms (Running Time)')
+				);
+			}
+		}
+		
 		// Display memory
 		$this->format('MEMORY', $data['memory'].' (PEAK: '.$data['memory_peak'].')');
 		
@@ -56,9 +69,10 @@ class Reporter {
 		if (count($data['queries'])) {
 			$this->format('SQL', count($data['queries']).' queries');
 			foreach($data['queries'] as $query) {
+				$sql = htmlspecialchars_decode(preg_replace('/(\s)+/', ' ', $query[0]));
 				$this->add(
 					Style::wrap('grey', '  ('.$query[1].'ms) ').
-					Style::wrap('cyan',wordwrap($query[0], 72, "\n           "))
+					Style::wrap('cyan',wordwrap($sql, 72, "\n           "))
 				);
 			}
 		}
