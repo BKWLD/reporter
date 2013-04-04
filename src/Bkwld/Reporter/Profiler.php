@@ -1,4 +1,4 @@
-<?php namespace Reporter;
+<?php namespace Bkwld\Reporter;
 
 // Imports
 use Laravel\Config;

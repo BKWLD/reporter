@@ -1,4 +1,4 @@
-<?php namespace Reporter;
+<?php namespace Bkwld\Reporter;
 
 // Methods to apply styling to CLI output
 class Style {

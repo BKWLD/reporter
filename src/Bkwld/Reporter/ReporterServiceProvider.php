@@ -1,6 +1,7 @@
 <?php namespace Bkwld\Reporter;
 
 use Illuminate\Support\ServiceProvider;
+use \Config;
 
 class ReporterServiceProvider extends ServiceProvider {
 
@@ -19,6 +20,26 @@ class ReporterServiceProvider extends ServiceProvider {
 	public function boot()
 	{
 		$this->package('bkwld/reporter');
+		return;
+		
+		// Disable
+		if (!Config::get('reporter::enable')) return;
+
+		/**
+		 * STOPPING WORKING ON THIS UNIL L4 IS A OFFICIAL OR A PROFILING
+		 * COMPONENT IS ADDED.
+		 */
+
+		// Attach built in profiler listeners if it's not turned on
+		if (!Config::get('application.profiler')) {
+			Laravel\Profiling\Profiler::attach();
+		}
+
+		// Listen for request to be done
+		Event::listen('laravel.done', function($response) {
+			$r = new Reporter();
+			$r->write();
+		});
 	}
 
 	/**
