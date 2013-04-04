@@ -34,11 +34,7 @@ Currently the output is inserted into the standard Laravel log location (/storag
 
 ## Installation
 
-You'll probably want to set it to autostart in your bundles.php:
-
-    'reporter' => array('auto' => true),
-
-Also, if you want your SQL to be logged, make sure the config variable `database.profile` is set to true.
+CURRENTLY NOT WORKING IN LARAVEL 4.
 
 ## Config
 
