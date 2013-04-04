@@ -34,7 +34,7 @@ Currently the output is inserted into the standard Laravel log location (/storag
 
 ## Installation
 
-CURRENTLY NOT WORKING IN LARAVEL 4.
+CURRENTLY NOT WORKING IN LARAVEL 4 BECAUSE THE INTERNAL PROFILER NO LONGER EXISTS (FOR NOW).
 
 ## Config
 
