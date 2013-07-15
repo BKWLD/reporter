@@ -24,6 +24,11 @@ class ReporterServiceProvider extends ServiceProvider {
 		// Disable
 		if (!Config::get('reporter::enable')) return;
 		
+		// Make a timer instance that can be resolved via the facade.
+		$this->app->singleton('timer', function() {
+			return new Processors\Timer();
+		});
+		
 		// Init
 		$r = new Reporter();
 

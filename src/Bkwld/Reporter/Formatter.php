@@ -51,19 +51,17 @@ class Formatter implements FormatterInterface {
 		$this->style('TIME', $extra['time'].'ms');
 		
 		// Display custom timers
-		/*
-		if (!empty($data['timers'])) {
+		if (!empty($extra['timers'])) {
 			$this->style('TIMERS');
 			$maxlen = 0;
-			foreach(array_keys($data['timers']) as $key) $maxlen = max($maxlen, strlen($key) + 4);
-			foreach($data['timers'] as $key => $val) {
+			foreach(array_keys($extra['timers']) as $key) $maxlen = max($maxlen, strlen($key) + 4);
+			foreach($extra['timers'] as $key => $val) {
 				$this->add(
 					Style::wrap('grey', str_pad('  '.$key.': ', $maxlen)).
-					Style::wrap('cyan', $val['running_time'].'ms (Running Time)')
+					Style::wrap('cyan', $val['elapsed'].'ms')
 				);
 			}
 		}
-		*/
 	}
 	
 	/**
@@ -96,7 +94,7 @@ class Formatter implements FormatterInterface {
 	 * Database queries
 	 */
 	private function formatDatabase($extra, $queries) {
-		if (!count($queries)) return;
+		if (empty($queries)) return;
 		$this->style('SQL', count($queries).' queries');
 		foreach($queries as $query) {
 			$sql = $query['query'];

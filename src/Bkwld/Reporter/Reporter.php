@@ -11,6 +11,7 @@ use Log;
 use URI;
 use Request;
 use Input;
+use Timer;
 
 // Assemble stats and write them to the file
 class Reporter {
@@ -30,12 +31,12 @@ class Reporter {
 		$stream = new StreamHandler(storage_path().'/logs/reporter.log', Logger::DEBUG);
 		$this->logger->pushHandler($stream);
 		
-		// Apply the reporter formatter
+		// Apply the Reporter formatter
 		$formatter = new Formatter();
 		$stream->setFormatter($formatter);
 		
 		// Add custom and built in processors
-		$this->logger->pushProcessor(new Processors\Timer());
+		$this->logger->pushProcessor(Timer::getFacadeRoot());
 		$this->logger->pushProcessor(new MemoryUsageProcessor());
 		$this->logger->pushProcessor(new MemoryPeakUsageProcessor());
 		$this->logger->pushProcessor(new WebProcessor());
