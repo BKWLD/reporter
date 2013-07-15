@@ -1,6 +1,6 @@
 {
     "name": "bkwld/reporter",
-    "description": "Dump diagnostic info from Laravel to the disk",
+    "description": "Generate styled logs of Laravel 4 requests that include application timing, memory usage, input data, and sql queries",
     "authors": [
         {
             "name": "Robert Reinhard",
