@@ -1,42 +1,68 @@
 # Reporter
 
-Reporter is a bundle for Laravel that is an alternative to the built in Profiler.  Instead of displaying output in the browser, it writes it to the disk in a log file that you can watch in realtime with `tail -f` or an app like Mac's Console.  This allows us to supplemental the built in Profiler output with some additional functionality:
+Reporter is a package for Laravel 4 that brings back functionality found in the profiler of Laravel 3.  Instead of displaying output in the browser, it writes to the disk in a log file that you can watch in realtime with `tail -f` or an app like Mac's Console.  This adds some advantages over a browser based profiler:
 
 * You can inspect AJAX requests
-* POST variables are displayed
+* POST variables are logged
 * The output rendering isn't affected by your application's CSS or JS
 * You can inspect apps that are in a production environment
 
 The output looks like:
 
 ```
-2013-01-08 14:17:15 REPORTER - 
+------------------------------------------------------------------------
+7/15/13 2:21:17 PM
 
-REQUEST:   //momentum.dev/admin/users/attach/1 (POST,XHR)
-TIME:      50.70ms
-MEMORY:    5.75 MiB (PEAK: 5.75 MiB)
-POST:      
-  parent_id: 27
+REQUEST:   /about?example=val
+TIME:      18.53ms
+TIMERS:    
+  content: 9.04ms
+MEMORY:    5 MB (PEAK: 5.25 MB)
+INPUT:     
+  example: val
 SQL:       2 queries
-  (0.27ms) SELECT * FROM `users` WHERE `id` = '1' LIMIT 1
-  (2.24ms) INSERT INTO `project_user` (`user_id`, `project_id`, `created_at`,
-           `updated_at`) VALUES ('1', '27', '2013-01-08 14:17:15', '2013-01-08
-           14:17:15')
+  (0.66 ms) select * from `articles` where `visible` = 1 order by
+           `articles`.`created_at` desc limit 3
+  (0.62 ms) select * from `ticker_posts` where `visible` = 1 order by
+           `ticker_posts`.`created_at` desc
 
 ------------------------------------------------------------------------
 ```
 
 Or, if you have style turned on:
 
-![image](http://f.cl.ly/items/0c381c1J1W1d2w1a1k3k/Screen%20Shot%202013-01-08%20at%202.18.50%20PM.png)
+![image](http://f.cl.ly/items/233e2H0V042S1L0v2r3m/Screen%20Shot%202013-07-15%20at%202.50.57%20PM.png)
 
-Currently the output is inserted into the standard Laravel log location (/storage/logs/yyyy-mm-dd.log).
+Reporter also adds the ability to time blocks of code (as displayed in the examples "TIMERS" line).
 
 ## Installation
 
-CURRENTLY NOT WORKING IN LARAVEL 4 BECAUSE THE INTERNAL PROFILER NO LONGER EXISTS (FOR NOW).
+1. Add reporter to composer.json: `"bkwld/library": "~2.0",` and do a composer install.
+2. Add `'Bkwld\Reporter\ReporterServiceProvider',` to your app/config.php's providers array.
+3. If you plan to use timers, add `'Timer' => 'Bkwld\Reporter\Facades\Timer',` to the app/config.php's aliases array.
 
-## Config
+### Config
 
-* `enable` - If false, Reporter will do nothing
-* `style` - Add color and style codes for output in a Terminal
+* `enable` - If false, Reporter will do nothing.  By default, this is set to false for the "production" enviornment.
+* `style` - Add color and style codes for output in a Terminal.
+
+## Usage
+
+### Logging
+
+Reporter writes it's log to app/storage/logs/reporter.log.  I'd recommend running `tail -f app/storage/logs/reporter.log` from your project directory to follow it.
+
+### Timer
+
+Laravel 3 had a way to time events with it's profiler.  Reporter re-introduces this.
+
+	Timer::start('example');
+	// Some code that you are benchmarking
+	Timer::stop('example');
+
+
+Start() and stop() take a string as their argument that is used to match up the start and stop calls.  It is also displayed as the key for the timer in the log.  The above example would add lines like this to the log:
+
+	TIMERS:
+	  example: 20.02ms
+
