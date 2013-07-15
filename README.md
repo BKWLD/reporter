@@ -37,7 +37,7 @@ Reporter also adds the ability to time blocks of code (as displayed in the examp
 
 ## Installation
 
-1. Add reporter to composer.json: `"bkwld/library": "~2.0",` and do a composer install.
+1. Add reporter to composer.json: `"bkwld/reporter": "~2.0",` and do a composer install.
 2. Add `'Bkwld\Reporter\ReporterServiceProvider',` to your app/config.php's providers array.
 3. If you plan to use timers, add `'Timer' => 'Bkwld\Reporter\Facades\Timer',` to the app/config.php's aliases array.
 
