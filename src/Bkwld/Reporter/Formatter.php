@@ -98,7 +98,15 @@ class Formatter implements FormatterInterface {
 		$this->style('SQL', count($queries).' queries');
 		foreach($queries as $query) {
 			$sql = $query['query'];
-			foreach($query['bindings'] as $binding) $sql = preg_replace('/\?/', $binding, $sql, 1);
+			
+			// Loop through bindings and insert into the query string
+			foreach($query['bindings'] as $binding) {
+				if ($binding instanceof \DateTime) $binding = $binding->format(\Bkwld\Library\Utils\Constants::MYSQL_DATETIME);
+				elseif (is_object($binding) && !method_exists($binding, '__toString' )) $binding = 'COULD_NOT_CONVERT_TO_STRING';
+				$sql = preg_replace('/\?/', $binding, $sql, 1);
+			}
+			
+			// Add log line
 			$this->add(
 				Style::wrap('grey', '  ('.number_format($query['time'],2).' ms) ').
 				Style::wrap('cyan',wordwrap($sql, 72, "\n           "))
