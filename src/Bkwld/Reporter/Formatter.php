@@ -7,6 +7,9 @@ class Formatter implements FormatterInterface {
 	
 	// Private vars
 	private $output = array();
+	const PAD = 11;
+	const WRAP = "\n           ";
+	const WIDTH = 72;
 	
 	/**
 	 * Format reporter output in the proper style.
@@ -14,7 +17,7 @@ class Formatter implements FormatterInterface {
 	public function format(array $record) {
 		
 		// Start new log
-		$this->add(Style::wrap('grey', str_repeat('-', 72)));
+		$this->add(Style::wrap('grey', str_repeat('-', self::WIDTH)));
 		$this->add(Style::wrap('grey', date('n/j/y g:i:s A')));
 		$this->add();
 		
@@ -39,7 +42,7 @@ class Formatter implements FormatterInterface {
 		if ($extra['http_method'] != 'GET') $props[] = $extra['http_method'];
 		if ($request->ajax()) $props[] = 'XHR';
 		$props = count($props) ? ' ('.implode(',',$props).')' : null;
-		$this->style('REQUEST', wordwrap($extra['url'], 72, "\n           ", true).$props);
+		$this->style('REQUEST', wordwrap($extra['url'], self::WIDTH, self::WRAP, true).$props);
 	}
 	
 	/**
@@ -83,7 +86,7 @@ class Formatter implements FormatterInterface {
 			if (is_array($val) || is_object($val)) $val = json_encode($val);
 			$this->add(
 				Style::wrap('grey', str_pad('  '.$key.': ', $maxlen)).
-				Style::wrap('cyan', wordwrap($val, 72, "\n".str_repeat(' ', $maxlen)))
+				Style::wrap('cyan', wordwrap($val, self::WIDTH, "\n".str_repeat(' ', $maxlen)))
 			);
 		}
 		
@@ -109,7 +112,7 @@ class Formatter implements FormatterInterface {
 			// Add log line
 			$this->add(
 				Style::wrap('grey', '  ('.number_format($query['time'],2).' ms) ').
-				Style::wrap('cyan',wordwrap($sql, 72, "\n           "))
+				Style::wrap('cyan', wordwrap($sql, self::WIDTH, self::WRAP))
 			);
 		}
 	}
@@ -124,7 +127,7 @@ class Formatter implements FormatterInterface {
 	/**
 	 * Format a line and add it to the output
 	 */
-	private function style($label, $value='', $pad=11) {
+	private function style($label, $value='', $pad=self::PAD) {
 		$this->add(
 			Style::wrap(array('bold', 'grey'), str_pad($label.':', $pad)).
 			Style::wrap('magenta', $value)
