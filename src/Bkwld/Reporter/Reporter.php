@@ -46,7 +46,7 @@ class Reporter {
 	/**
 	 * Write a new report
 	 */
-	public function write($request) {
+	public function write($request, $exception = null) {
 
 		// Do a debug log, passing it all the extra data that it needs.  This will ultimately
 		// write to the log file
@@ -54,6 +54,7 @@ class Reporter {
 			'request' => $request,
 			'database' => DB::connection()->getQueryLog(),
 			'input' => Input::get(),
+			'exception' => $exception,
 		));
 
 	}	

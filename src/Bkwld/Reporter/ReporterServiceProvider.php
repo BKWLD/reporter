@@ -1,5 +1,6 @@
 <?php namespace Bkwld\Reporter;
 
+use Exception;
 use Illuminate\Support\ServiceProvider;
 use Config;
 
@@ -30,12 +31,18 @@ class ReporterServiceProvider extends ServiceProvider {
 		});
 		
 		// Init
-		$r = new Reporter();
+		$reporter = new Reporter();
 
 		// Listen for request to be done.  Using "close" because "finish" comes too
 		// late for ChromePHP but close should happen after regular "after" handlers
-		$this->app->close(function($request, $response) use ($r) {
-			$r->write($request);
+		$this->app->close(function($request, $response) use ($reporter) {
+			$reporter->write($request);
+		});
+		
+		// Write logs on fatal errors and exceptions
+		$request = $this->app->make('request');
+		$this->app->error(function(Exception $exception) use ($reporter, $request) {
+			$reporter->write($request, $exception);
 		});
 		
 	}

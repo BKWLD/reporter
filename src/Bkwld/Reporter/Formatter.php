@@ -28,6 +28,7 @@ class Formatter implements FormatterInterface {
 		$this->formatUsage($extra);
 		$this->formatInput($extra, $record['context']['input']);
 		$this->formatDatabase($extra, $record['context']['database']);
+		$this->formatException($extra, $record['context']['exception']);
 		
 		// End
 		$this->add(); $this->add();
@@ -115,6 +116,20 @@ class Formatter implements FormatterInterface {
 				Style::wrap('cyan', wordwrap($sql, self::WIDTH, self::WRAP))
 			);
 		}
+	}
+	
+	/**
+	 * Exceptions
+	 */
+	private function formatException($extra, $exception) {
+		if (empty($exception)) return;
+		$this->add(
+			Style::wrap(array('bold', 'red'), str_pad('ERROR'.':', self::PAD)).
+			Style::wrap('red', wordwrap('"'.$exception->getMessage().'"'.
+				' in '.substr($exception->getFile(), strlen(base_path())+1).
+				' on line '.$exception->getLine()
+			 , self::WIDTH, self::WRAP, true))
+		);
 	}
 	
 	/**
