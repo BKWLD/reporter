@@ -32,19 +32,29 @@ class ReporterServiceProvider extends ServiceProvider {
 		
 		// Init
 		$reporter = new Reporter();
+		$request = $this->app->make('request');
 
 		// Listen for request to be done.  Using "close" because "finish" comes too
 		// late for ChromePHP but close should happen after regular "after" handlers
 		$this->app->close(function($request, $response) use ($reporter) {
-			$reporter->write($request);
+			$reporter->write(array( 'request' => $request ));
 		});
 		
 		// Write logs on fatal errors and exceptions
-		$request = $this->app->make('request');
 		$this->app->error(function(Exception $exception) use ($reporter, $request) {
-			$reporter->write($request, $exception);
+			$reporter->write(array(
+				'request' => $request,
+				'exception' => $exception
+			));
 		});
 		
+		// Buffer other log messages.
+		$levels = Config::get('reporter::levels');
+		if (!empty($levels)) {
+			$this->app->make('log')->listen(function($level, $message, $context) use ($reporter, $levels) {
+				if (in_array($level, $levels)) $reporter->buffer($level, $message, $context);
+			});
+		}		
 	}
 
 	/**

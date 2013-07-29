@@ -8,8 +8,8 @@ class Formatter implements FormatterInterface {
 	// Private vars
 	private $output = array();
 	const PAD = 11;
+	const WIDTH = 69;
 	const WRAP = "\n           ";
-	const WIDTH = 72;
 	
 	/**
 	 * Format reporter output in the proper style.
@@ -23,12 +23,13 @@ class Formatter implements FormatterInterface {
 		
 		// And off formatting by type to sub functions
 		$extra = $record['extra'];
-		$this->formatRequest($extra, $record['context']['request']);
+		if (!empty($record['context']['request'])) $this->formatRequest($extra, $record['context']['request']);
 		$this->formatTimer($extra);
 		$this->formatUsage($extra);
-		$this->formatInput($extra, $record['context']['input']);
-		$this->formatDatabase($extra, $record['context']['database']);
-		$this->formatException($extra, $record['context']['exception']);
+		if (!empty($record['context']['input'])) $this->formatInput($extra, $record['context']['input']);
+		if (!empty($record['context']['database'])) $this->formatDatabase($extra, $record['context']['database']);
+		if (!empty($record['context']['logs'])) $this->formatLog($extra, $record['context']['logs']);
+		if (!empty($record['context']['exception'])) $this->formatException($extra, $record['context']['exception']);
 		
 		// End
 		$this->add(); $this->add();
@@ -79,7 +80,6 @@ class Formatter implements FormatterInterface {
 	 * Request data
 	 */
 	private function formatInput($extra, $input) {
-		if (empty($input)) return;
 		$this->style('INPUT');
 		$maxlen = 0;
 		foreach(array_keys($input) as $key) $maxlen = max($maxlen, strlen($key) + 4);
@@ -98,7 +98,6 @@ class Formatter implements FormatterInterface {
 	 * Database queries
 	 */
 	private function formatDatabase($extra, $queries) {
-		if (empty($queries)) return;
 		$this->style('SQL', count($queries).' queries');
 		foreach($queries as $query) {
 			$sql = $query['query'];
@@ -122,14 +121,36 @@ class Formatter implements FormatterInterface {
 	 * Exceptions
 	 */
 	private function formatException($extra, $exception) {
-		if (empty($exception)) return;
+		$this->add();
 		$this->add(
 			Style::wrap(array('bold', 'red'), str_pad('ERROR'.':', self::PAD)).
-			Style::wrap('red', wordwrap('"'.$exception->getMessage().'"'.
+			Style::wrap('red', wordwrap($exception->getMessage().
 				' in '.substr($exception->getFile(), strlen(base_path())+1).
 				' on line '.$exception->getLine()
 			 , self::WIDTH, self::WRAP, true))
 		);
+	}
+	
+	/**
+	 * Other log messages
+	 */
+	private function formatLog($extra, $logs) {
+		$this->add();
+		foreach($logs as $log) {
+			
+			// Diplay the message
+			$this->add(
+				Style::wrap(array('bold', 'grey'), str_pad(strtoupper($log->level).':', self::PAD)).
+				Style::wrap('yellow', wordwrap($log->message, self::WIDTH, self::WRAP, true))
+			);
+			
+			// Show extra info
+			if (!empty($log->context)) {
+				$this->add(
+					Style::wrap('grey', '  '.str_replace("\n", "\n  ", trim(print_r($log->context, true))))
+				);
+			}
+		}
 	}
 	
 	/**

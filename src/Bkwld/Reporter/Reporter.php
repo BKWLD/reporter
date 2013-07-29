@@ -2,6 +2,7 @@
 
 // Dependencies
 use Monolog\Logger;
+use Monolog\Handler\BufferHandler;
 use Monolog\Handler\StreamHandler;
 use Monolog\Processor\MemoryUsageProcessor;
 use Monolog\Processor\MemoryPeakUsageProcessor;
@@ -20,6 +21,7 @@ class Reporter {
 	 * Private vars
 	 */
 	private $logger;
+	private $buffered = array();
 	
 	/**
 	 * Init
@@ -44,18 +46,33 @@ class Reporter {
 	}
 	
 	/**
+	 * Buffer other Laravel log messages
+	 */
+	public function buffer($level, $message, $context) {
+		$this->buffered[] = (object) array(
+			'level' => $level,
+			'message' => $message,
+			'context' => $context,
+		);
+	}
+	
+	/**
 	 * Write a new report
 	 */
-	public function write($request, $exception = null) {
+	public function write($params = array()) {
+
+		// Apply default params
+		$params = array_merge(
+			array(
+				'database' => DB::connection()->getQueryLog(),
+				'input' => Input::get(),
+				'logs' => $this->buffered,
+			), $params
+		);
 
 		// Do a debug log, passing it all the extra data that it needs.  This will ultimately
 		// write to the log file
-		$this->logger->addDebug('Reporter', array(
-			'request' => $request,
-			'database' => DB::connection()->getQueryLog(),
-			'input' => Input::get(),
-			'exception' => $exception,
-		));
+		$this->logger->addDebug('Reporter', $params);
 
 	}	
 }

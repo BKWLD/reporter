@@ -5,4 +5,8 @@
 	
 	// Style the output using escaped codes
 	'style' => true,
+	
+	// Laravel log levels to show to show
+	'levels' => array('debug', 'info', 'notice', 'warn'),
+	
 );
