@@ -23,7 +23,9 @@ class Formatter implements FormatterInterface {
 		
 		// And off formatting by type to sub functions
 		$extra = $record['extra'];
-		if (!empty($record['context']['request'])) $this->formatRequest($extra, $record['context']['request']);
+		if (!empty($record['context']['request'])
+			&& !empty($extra['http_method'])
+			&& !empty($extra['url'])) $this->formatRequest($extra, $record['context']['request']);
 		$this->formatTimer($extra);
 		$this->formatUsage($extra);
 		if (!empty($record['context']['input'])) $this->formatInput($extra, $record['context']['input']);
