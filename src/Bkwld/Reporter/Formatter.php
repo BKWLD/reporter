@@ -108,7 +108,7 @@ class Formatter implements FormatterInterface {
 			foreach($query['bindings'] as $binding) {
 				if ($binding instanceof \DateTime) $binding = $binding->format(\Bkwld\Library\Utils\Constants::MYSQL_DATETIME);
 				elseif (is_object($binding) && !method_exists($binding, '__toString' )) $binding = 'COULD_NOT_CONVERT_TO_STRING';
-				$sql = preg_replace('/\?/', $binding, $sql, 1);
+				$sql = preg_replace('/\?/', "'".$binding."'", $sql, 1);
 			}
 			
 			// Add log line
