@@ -43,7 +43,7 @@ Reporter also adds the ability to time blocks of code (as displayed in the examp
 
 ### Config
 
-* `enable` - If false, Reporter will do nothing.  By default, this is set to false for the "production" enviornment.
+* `enable` - If false, Reporter will do nothing.  By default, this is set to false for the "production" enviornment **IF** you publish the package's config file to your app/config directory.
 * `style` - Add color and style codes for output in a Terminal.
 
 ## Usage
