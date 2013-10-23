@@ -112,8 +112,10 @@ class Formatter implements FormatterInterface {
 			}
 			
 			// Add log line
+			$time = preg_replace('#[^\d.]#', '', $query['time']);
+			$time = $time > 1000 ? number_format($time/1000, 2).' s' : number_format($time, 2).' ms';
 			$this->add(
-				Style::wrap('grey', '  ('.number_format($query['time'],2).' ms) ').
+				Style::wrap('grey', '  ('.$time.') ').
 				Style::wrap('cyan', wordwrap($sql, self::WIDTH, self::WRAP))
 			);
 		}
