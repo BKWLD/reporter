@@ -26,6 +26,7 @@ class Formatter implements FormatterInterface {
 		if (!empty($record['context']['request'])
 			&& !empty($extra['http_method'])
 			&& !empty($extra['url'])) $this->formatRequest($extra, $record['context']['request']);
+		if (!empty($record['context']['command'])) $this->formatCommand($extra, $record['context']['command']);
 		$this->formatTimer($extra);
 		$this->formatUsage($extra);
 		if (!empty($record['context']['input'])) $this->formatInput($extra, $record['context']['input']);
@@ -47,6 +48,13 @@ class Formatter implements FormatterInterface {
 		if ($request->ajax()) $props[] = 'XHR';
 		$props = count($props) ? ' ('.implode(',',$props).')' : null;
 		$this->style('REQUEST', wordwrap($extra['url'], self::WIDTH, self::WRAP, true).$props);
+	}
+	
+	/**
+	 * CLI Command info
+	 */
+	private function formatCommand($extra, $command) {
+		$this->style('ARTISAN', wordwrap($command, self::WIDTH, self::WRAP, true));
 	}
 	
 	/**

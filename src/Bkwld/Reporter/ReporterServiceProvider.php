@@ -1,8 +1,9 @@
 <?php namespace Bkwld\Reporter;
 
+use Config;
 use Exception;
 use Illuminate\Support\ServiceProvider;
-use Config;
+use Symfony\Component\Console\Input\ArgvInput;
 
 class ReporterServiceProvider extends ServiceProvider {
 
@@ -33,12 +34,26 @@ class ReporterServiceProvider extends ServiceProvider {
 		// Init
 		$reporter = new Reporter();
 		$request = $this->app->make('request');
-
+		
+		// If the app is running through console, listen for shutdown.  It's the only
+		// event that fires after artisan finishes
+		if ($this->app->runningInConsole()) {
+			$this->app->shutdown(function() use ($reporter) {
+				
+				// Figure out the runng command the same way that Symfony does
+				$input = new ArgvInput();
+				$command = $input->getFirstArgument();
+				$reporter->write(array('command' => $command));
+			});
+		
 		// Listen for request to be done.  Using "close" because "finish" comes too
 		// late for ChromePHP but close should happen after regular "after" handlers
-		$this->app->close(function($request, $response) use ($reporter) {
-			$reporter->write(array( 'request' => $request ));
-		});
+		} else {
+			$this->app->close(function($request, $response) use ($reporter) {
+				$reporter->write(array( 'request' => $request ));
+			});
+		}
+		
 		
 		// Write logs on fatal errors and exceptions
 		$this->app->error(function(Exception $exception) use ($reporter, $request) {

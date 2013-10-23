@@ -10,7 +10,8 @@
     "license": "MIT",
     "require": {
         "php": ">=5.3.0",
-        "illuminate/support": "4.0.x"
+        "illuminate/support": "4.0.x",
+        "symfony/console": "~2.3.6"
     },
     "autoload": {
         "psr-0": {
