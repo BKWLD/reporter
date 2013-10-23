@@ -39,10 +39,7 @@ class ReporterServiceProvider extends ServiceProvider {
 		// event that fires after artisan finishes
 		if ($this->app->runningInConsole()) {
 			$this->app->shutdown(function() use ($reporter) {
-				
-				// Figure out the runng command the same way that Symfony does
-				$input = new ArgvInput();
-				$command = $input->getFirstArgument();
+				$command = implode(' ', array_slice($_SERVER['argv'], 1));
 				$reporter->write(array('command' => $command));
 			});
 		
