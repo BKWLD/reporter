@@ -65,7 +65,7 @@ class Reporter {
 		// Test for DB, in case it's not able to connect yet
 		try {
 			$defaults['database'] = Db::connection()->getQueryLog();
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			
 			// Continue running even if DB could not be logged, but display
 			// a note in the log
