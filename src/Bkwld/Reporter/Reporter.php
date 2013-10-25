@@ -48,7 +48,7 @@ class Reporter {
 	/**
 	 * Buffer other Laravel log messages
 	 */
-	public function buffer($level, $message, $context) {
+	public function buffer($level, $message, $context = array()) {
 		$this->buffered[] = (object) array(
 			'level' => $level,
 			'message' => $message,
@@ -60,15 +60,24 @@ class Reporter {
 	 * Write a new report
 	 */
 	public function write($params = array()) {
+		$defaults = array();
+
+		// Test for DB, in case it's not able to connect yet
+		try {
+			$defaults['database'] = Db::connection()->getQueryLog();
+		} catch (Exception $e) {
+			
+			// Continue running even if DB could not be logged, but display
+			// a note in the log
+			$this->buffer('error', 'Reporter could not connect to the database');
+		}
+
+		// Default params
+		$defaults['input'] = Input::get();
+		$defaults['logs'] = $this->buffered;
 
 		// Apply default params
-		$params = array_merge(
-			array(
-				'database' => DB::connection()->getQueryLog(),
-				'input' => Input::get(),
-				'logs' => $this->buffered,
-			), $params
-		);
+		$params = array_merge($defaults, $params);
 
 		// Do a debug log, passing it all the extra data that it needs.  This will ultimately
 		// write to the log file
