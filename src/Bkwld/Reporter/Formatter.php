@@ -151,9 +151,10 @@ class Formatter implements FormatterInterface {
 		foreach($logs as $log) {
 			
 			// Diplay the message
+			$color = in_array($log->level, array('error', 'critical', 'alert', 'emergency')) ? 'red' : 'yellow';
 			$this->add(
 				Style::wrap(array('bold', 'grey'), str_pad(strtoupper($log->level).':', self::PAD)).
-				Style::wrap('yellow', wordwrap($log->message, self::WIDTH, self::WRAP, true))
+				Style::wrap($color, wordwrap($log->message, self::WIDTH, self::WRAP, true))
 			);
 			
 			// Show extra info
