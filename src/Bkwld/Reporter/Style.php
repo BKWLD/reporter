@@ -30,16 +30,17 @@ class Style {
 	public static function wrap($styles, $text) {
 		
 		// Check if styles are enabled
-		if (Config::get('reporter::style')) {
-			// Styles can be a string or an array
-			if (!is_array($styles)) $styles = array($styles);
+		if (!Config::get('reporter::style')) return $text;
 
-			// Wrap the text in tags
-			foreach($styles as $style) {
-				if (!isset(self::$codes[$style])) throw new Exception('Invalid style key');
-				$text = self::$codes[$style][0].$text.self::$codes[$style][1];
-			}
+		// Styles can be a string or an array
+		if (!is_array($styles)) $styles = array($styles);
+
+		// Wrap the text in tags
+		foreach($styles as $style) {
+			if (!isset(self::$codes[$style])) throw new Exception('Invalid style key');
+			$text = self::$codes[$style][0].$text.self::$codes[$style][1];
 		}
+
 		return $text;
 		
 	}
