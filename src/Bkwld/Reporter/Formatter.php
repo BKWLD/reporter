@@ -114,7 +114,7 @@ class Formatter implements FormatterInterface {
 			
 			// Loop through bindings and insert into the query string
 			foreach($query['bindings'] as $binding) {
-				if ($binding instanceof \DateTime) $binding = $binding->format(\Bkwld\Library\Utils\Constants::MYSQL_DATETIME);
+				if ($binding instanceof \DateTime) $binding = $binding->format('Y-m-d H:i:s');
 				elseif (is_object($binding) && !method_exists($binding, '__toString' )) $binding = 'COULD_NOT_CONVERT_TO_STRING';
 				$sql = preg_replace('/\?/', "'".$binding."'", $sql, 1);
 			}
