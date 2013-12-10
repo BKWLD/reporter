@@ -43,10 +43,9 @@ class ReporterServiceProvider extends ServiceProvider {
 				$reporter->write(array('command' => $command));
 			});
 		
-		// Listen for request to be done.  Using "close" because "finish" comes too
-		// late for ChromePHP but close should happen after regular "after" handlers
+		// Listen for request to be done
 		} else {
-			$this->app->close(function($request, $response) use ($reporter) {
+			$this->app->after(function($request, $response) use ($reporter) {
 				$reporter->write(array( 'request' => $request ));
 			});
 		}
@@ -60,7 +59,7 @@ class ReporterServiceProvider extends ServiceProvider {
 			));
 		});
 		
-		// Buffer other log messages.
+		// Buffer other log messages
 		$levels = Config::get('reporter::levels');
 		if (!empty($levels)) {
 			$this->app->make('log')->listen(function($level, $message, $context) use ($reporter, $levels) {
