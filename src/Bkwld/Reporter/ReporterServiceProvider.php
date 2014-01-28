@@ -45,7 +45,7 @@ class ReporterServiceProvider extends ServiceProvider {
 		
 		// Listen for request to be done
 		} else {
-			$this->app->after(function($request, $response) use ($reporter) {
+			$this->app->finish(function($request, $response) use ($reporter) {
 				$reporter->write(array( 'request' => $request ));
 			});
 		}
