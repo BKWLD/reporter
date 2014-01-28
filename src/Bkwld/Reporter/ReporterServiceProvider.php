@@ -43,17 +43,24 @@ class ReporterServiceProvider extends ServiceProvider {
 				$reporter->write(array('command' => $command));
 			});
 		
-		// Listen for request to be done
+		// Listen for request to be done and all after() filters to have run
 		} else {
 			$this->app->finish(function($request, $response) use ($reporter) {
 				$reporter->write(array( 'request' => $request ));
 			});
 		}
 		
-		// Add fatal errors and exceptions to what will be written by "finish".  Because
-		// this will be fired before AND in addition to finish().
+		// Add exceptions to what will be written by finish/shutdown
 		$this->app->error(function(Exception $exception) use ($reporter, $request) {
 			$reporter->exception($exception);
+		});
+
+		// Fatal errors abort finish/shutdown, so write the log immediately
+		$this->app->fatal(function(Exception $exception) use ($reporter, $request) {
+			$reporter->write(array(
+				'request' => $request,
+				'exception' => $exception
+			));
 		});
 		
 		// Buffer other log messages
