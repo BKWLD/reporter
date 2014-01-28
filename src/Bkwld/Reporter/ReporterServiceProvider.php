@@ -50,13 +50,10 @@ class ReporterServiceProvider extends ServiceProvider {
 			});
 		}
 		
-		
-		// Write logs on fatal errors and exceptions
+		// Add fatal errors and exceptions to what will be written by "finish".  Because
+		// this will be fired before AND in addition to finish().
 		$this->app->error(function(Exception $exception) use ($reporter, $request) {
-			$reporter->write(array(
-				'request' => $request,
-				'exception' => $exception
-			));
+			$reporter->exception($exception);
 		});
 		
 		// Buffer other log messages

@@ -22,6 +22,7 @@ class Reporter {
 	 */
 	private $logger;
 	private $buffered = array();
+	private $exception;
 	
 	/**
 	 * Init
@@ -55,7 +56,14 @@ class Reporter {
 			'context' => $context,
 		);
 	}
-	
+
+	/**
+	 * Adds an exception to what will be written
+	 */
+	public function exception($exception) {
+		$this->exception = $exception;
+	}
+
 	/**
 	 * Write a new report
 	 */
@@ -78,6 +86,7 @@ class Reporter {
 
 		// Apply default params
 		$params = array_merge($defaults, $params);
+		if ($this->exception) $params['exception'] = $this->exception;
 
 		// Do a debug log, passing it all the extra data that it needs.  This will ultimately
 		// write to the log file
