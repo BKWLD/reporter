@@ -2,6 +2,9 @@
 	
 	// Toggle reporting on and off
 	'enable' => true,	
+
+	// Also write logs to stdout
+	'stdout' => false,
 	
 	// Style the output using escaped codes
 	'style' => true,

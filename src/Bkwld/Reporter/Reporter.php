@@ -4,13 +4,12 @@
 use Monolog\Logger;
 use Monolog\Handler\BufferHandler;
 use Monolog\Handler\StreamHandler;
+use Monolog\Handler\ErrorLogHandler;
 use Monolog\Processor\MemoryUsageProcessor;
 use Monolog\Processor\MemoryPeakUsageProcessor;
 use Monolog\Processor\WebProcessor;
+use Config;
 use DB;
-use Log;
-use URI;
-use Request;
 use Input;
 use Timer;
 
@@ -37,7 +36,14 @@ class Reporter {
 		// Apply the Reporter formatter
 		$formatter = new Formatter();
 		$stream->setFormatter($formatter);
-		
+
+		// Log to standard PHP log
+		if (Config::get('reporter::stdout')) {
+			$stdout = new StreamHandler(fopen('php://stdout', 'w'));
+			$this->logger->pushHandler($stdout);
+			$stdout->setFormatter($formatter);
+		}
+
 		// Add custom and built in processors
 		$this->logger->pushProcessor(Timer::getFacadeRoot());
 		$this->logger->pushProcessor(new MemoryUsageProcessor());
@@ -72,7 +78,7 @@ class Reporter {
 
 		// Test for DB, in case it's not able to connect yet
 		try {
-			$defaults['database'] = Db::connection()->getQueryLog();
+			$defaults['database'] = DB::connection()->getQueryLog();
 		} catch (\Exception $e) {
 			
 			// Continue running even if DB could not be logged, but display
