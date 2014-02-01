@@ -38,8 +38,8 @@ class Reporter {
 		$stream->setFormatter($formatter);
 
 		// Log to standard PHP log
-		if (Config::get('reporter::stdout')) {
-			$stdout = new StreamHandler(fopen('php://stdout', 'w'));
+		if (Config::get('reporter::error_log')) {
+			$stdout = new ErrorLogHandler();
 			$this->logger->pushHandler($stdout);
 			$stdout->setFormatter($formatter);
 		}

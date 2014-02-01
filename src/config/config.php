@@ -3,8 +3,8 @@
 	// Toggle reporting on and off
 	'enable' => true,	
 
-	// Also write logs to stdout
-	'stdout' => false,
+	// Also write logs to the error_log
+	'error_log' => false,
 	
 	// Style the output using escaped codes
 	'style' => true,
