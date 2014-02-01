@@ -17,6 +17,7 @@ class Formatter implements FormatterInterface {
 	public function format(array $record) {
 		
 		// Start new log
+		$this->add();
 		$this->add(Style::wrap('grey', str_repeat('-', self::WIDTH)));
 		$this->add(Style::wrap('grey', date('n/j/y g:i:s A')));
 		$this->add();
@@ -35,7 +36,7 @@ class Formatter implements FormatterInterface {
 		if (!empty($record['context']['exception'])) $this->formatException($extra, $record['context']['exception']);
 		
 		// End
-		$this->add(); $this->add();
+		$this->add();
 		return implode("\n", $this->output);
 	}
 	
