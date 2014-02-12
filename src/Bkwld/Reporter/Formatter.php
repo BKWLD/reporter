@@ -46,7 +46,7 @@ class Formatter implements FormatterInterface {
 	private function formatRequest($extra, $request) {
 		$props = array();
 		if ($extra['http_method'] != 'GET') $props[] = $extra['http_method'];
-		if ($request->ajax()) $props[] = 'XHR';
+		if (method_exists($request, 'ajax') && $request->ajax()) $props[] = 'XHR';
 		$props = count($props) ? ' ('.implode(',',$props).')' : null;
 		$this->style('REQUEST', wordwrap($extra['url'], self::WIDTH, self::WRAP, true).$props);
 	}
