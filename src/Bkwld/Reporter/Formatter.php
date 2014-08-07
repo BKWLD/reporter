@@ -48,14 +48,14 @@ class Formatter implements FormatterInterface {
 		if ($extra['http_method'] != 'GET') $props[] = $extra['http_method'];
 		if (method_exists($request, 'ajax') && $request->ajax()) $props[] = 'XHR';
 		$props = count($props) ? ' ('.implode(',',$props).')' : null;
-		$this->style('REQUEST', wordwrap($extra['url'], self::WIDTH, self::WRAP, true).$props);
+		$this->style('REQUEST', $this->wordwrap($extra['url']).$props);
 	}
 	
 	/**
 	 * CLI Command info
 	 */
 	private function formatCommand($extra, $command) {
-		$this->style('ARTISAN', wordwrap($command, self::WIDTH, self::WRAP, true));
+		$this->style('ARTISAN', $this->wordwrap($command));
 	}
 	
 	/**
@@ -98,7 +98,7 @@ class Formatter implements FormatterInterface {
 			if (is_array($val) || is_object($val)) $val = json_encode($val);
 			$this->add(
 				Style::wrap('grey', str_pad('  '.$key.': ', $maxlen)).
-				Style::wrap('cyan', wordwrap($val, self::WIDTH, "\n".str_repeat(' ', $maxlen)))
+				Style::wrap('cyan',  $this->wordwrap($val, "\n".str_repeat(' ', $maxlen)))
 			);
 		}
 		
@@ -125,7 +125,7 @@ class Formatter implements FormatterInterface {
 			$time = $time > 1000 ? number_format($time/1000, 2).' s' : number_format($time, 2).' ms';
 			$this->add(
 				Style::wrap('grey', '  ('.$time.') ').
-				Style::wrap('cyan', wordwrap($sql, self::WIDTH, self::WRAP))
+				Style::wrap('cyan', $this->wordwrap($sql, self::WRAP, false))
 			);
 		}
 	}
@@ -137,10 +137,9 @@ class Formatter implements FormatterInterface {
 		$this->add();
 		$this->add(
 			Style::wrap(array('bold', 'red'), str_pad('ERROR'.':', self::PAD)).
-			Style::wrap('red', wordwrap($exception->getMessage().
+			Style::wrap('red', $this->wordwrap($exception->getMessage().
 				' in '.substr($exception->getFile(), strlen(base_path())+1).
-				' on line '.$exception->getLine()
-			 , self::WIDTH, self::WRAP, true))
+				' on line '.$exception->getLine()))
 		);
 	}
 	
@@ -155,7 +154,7 @@ class Formatter implements FormatterInterface {
 			$color = in_array($log->level, array('error', 'critical', 'alert', 'emergency')) ? 'red' : 'yellow';
 			$this->add(
 				Style::wrap(array('bold', 'grey'), str_pad(strtoupper($log->level).':', self::PAD)).
-				Style::wrap($color, wordwrap($log->message, self::WIDTH, self::WRAP, true))
+				Style::wrap($color, $this->wordwrap($log->message))
 			);
 			
 			// Show extra info
@@ -165,6 +164,17 @@ class Formatter implements FormatterInterface {
 				);
 			}
 		}
+	}
+
+	/**
+	 * Safely wordwrap a string including converting non-strings to strings via json_encode
+	 *
+	 * @param mixed $msg
+	 * @return string 
+	 */
+	private function wordwrap($msg, $break = self::WRAP, $cut = true) {
+		if (!is_string($msg)) $msg = json_encode($msg);
+		return wordwrap($msg, self::WIDTH, $break, $cut);
 	}
 	
 	/**
