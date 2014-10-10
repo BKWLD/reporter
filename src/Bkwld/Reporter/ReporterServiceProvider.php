@@ -1,6 +1,5 @@
 <?php namespace Bkwld\Reporter;
 
-use Config;
 use Exception;
 use Illuminate\Support\ServiceProvider;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -24,7 +23,7 @@ class ReporterServiceProvider extends ServiceProvider {
 		$this->package('bkwld/reporter');
 		
 		// Disable
-		if (!Config::get('reporter::enable')) return;
+		if (!$this->app->make('config')->get('reporter::enable')) return;
 		
 		// Make a timer instance that can be resolved via the facade.
 		$this->app->singleton('timer', function() {
@@ -34,7 +33,14 @@ class ReporterServiceProvider extends ServiceProvider {
 		// Init
 		$reporter = new Reporter();
 		$request = $this->app->make('request');
-		
+
+		// If the request path is being ignored, don't log anything
+		if (($path = $request->path()) 
+			&& ($regex = $this->app->make('config')->get('reporter::ignore'))
+			&& preg_match('#'.$regex.'#i', $path)) {
+			return;
+		}
+
 		// If the app is running through console, listen for shutdown.  It's the only
 		// event that fires after artisan finishes
 		if ($this->app->runningInConsole()) {
@@ -64,7 +70,7 @@ class ReporterServiceProvider extends ServiceProvider {
 		});
 		
 		// Buffer other log messages
-		$levels = Config::get('reporter::levels');
+		$levels = $this->app->make('config')->get('reporter::levels');
 		if (!empty($levels)) {
 			$this->app->make('log')->listen(function($level, $message, $context) use ($reporter, $levels) {
 				if (in_array($level, $levels)) $reporter->buffer($level, $message, $context);

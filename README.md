@@ -45,6 +45,9 @@ Reporter also adds the ability to time blocks of code (as displayed in the examp
 
 * `enable` - If false, Reporter will do nothing.  By default, this is set to false for the "production" enviornment **IF** you publish the package's config file to your app/config directory.
 * `style` - Add color and style codes for output in a Terminal.
+* `error_log` - If true, also write logs to the PHP `error_log()`
+* `levels` - An array of log levels that should be shown
+* `ignore` -  A regex string.  If the request path matches, no log will be written.
 
 ## Usage
 

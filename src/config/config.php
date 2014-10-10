@@ -11,5 +11,8 @@
 	
 	// Laravel log levels to show to show
 	'levels' => array('debug', 'info', 'notice', 'warn'),
+
+	// A regex for URL paths to ignore.
+	// 'ignore' => '\.(jpg|png|gif)$',
 	
 );
