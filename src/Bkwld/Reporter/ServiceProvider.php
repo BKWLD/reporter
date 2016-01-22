@@ -27,7 +27,7 @@ class ServiceProvider extends LaravelServiceProvider {
 		], 'reporter');
 
 		// Disable
-		if (!$this->app->make('config')->get('reporter::enable')) return;
+		if (!$this->app->make('config')->get('reporter.enable')) return;
 
 		// Make a timer instance that can be resolved via the facade.
 		$this->app->singleton('timer', function() {
