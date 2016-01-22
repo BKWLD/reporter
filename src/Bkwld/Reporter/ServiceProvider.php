@@ -99,9 +99,7 @@ class ServiceProvider extends LaravelServiceProvider {
 	 */
 	public function provides()
 	{
-		return [
-			'Bkwld\Reporter\Reporter',
-		];
+		return array();
 	}
 
 }
