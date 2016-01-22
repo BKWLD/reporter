@@ -6,15 +6,6 @@ use Symfony\Component\Console\Input\ArgvInput;
 
 class ServiceProvider extends LaravelServiceProvider {
 
-	/**
-	 * Get the major Laravel version number
-	 *
-	 * @return integer
-	 */
-	public function version() {
-		$app = $this->app;
-		return intval($app::VERSION);
-	}
 
 	/**
 	 * Indicates if loading of the provider is deferred.
@@ -31,14 +22,9 @@ class ServiceProvider extends LaravelServiceProvider {
 	public function boot()
 	{
 
-		// Version specific booting
-		switch($this->version()) {
-			case 4: $this->bootLaravel4(); break;
-			case 5: $this->bootLaravel5(); break;
-			default: throw new Exception('Unsupported Laravel version');
-		}
-
-		//$this->package('bkwld/reporter');
+		$this->publishes([
+			__DIR__.'/../../config/config.php' => config_path('reporter.php')
+		], 'reporter');
 
 		// Disable
 		if (!$this->app->make('config')->get('reporter::enable')) return;
@@ -107,35 +93,15 @@ class ServiceProvider extends LaravelServiceProvider {
 	}
 
 	/**
-	 * Boot specific logic for Laravel 4. Tells Laravel about the package for auto
-	 * namespacing of config files
-	 *
-	 * @return void
-	 */
-	public function bootLaravel4() {
-		$this->package('bkwld/croppa');
-	}
-
-	/**
-	 * Boot specific logic for Laravel 5. Registers the config file for publishing
-	 * to app directory
-	 *
-	 * @return void
-	 */
-	public function bootLaravel5() {
-		$this->publishes([
-			__DIR__.'/../../config/config.php' => config_path('reporter.php')
-		], 'reporter');
-	}
-
-	/**
 	 * Get the services provided by the provider.
 	 *
 	 * @return array
 	 */
 	public function provides()
 	{
-		return array();
+		return [
+			'Bkwld\Reporter\Reporter',
+		];
 	}
 
 }
