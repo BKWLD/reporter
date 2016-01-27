@@ -22,7 +22,7 @@ class ServiceProvider extends LaravelServiceProvider {
 
 		// Define config publishing
 		$this->publishes([
-			__DIR__.'/../../config/config.php' => config_path('reporter.php')
+			__DIR__.'/../../config/reporter.php' => config_path('reporter.php')
 		], 'config');
 
 		// Disable
@@ -78,6 +78,9 @@ class ServiceProvider extends LaravelServiceProvider {
 	 * @return void
 	 */
 	public function register() 	{
+
+		// Merge own configs into user configs
+		$this->mergeConfigFrom(__DIR__.'/../config/reporter.php', 'reporter');
 
 		// Main reporter instance
 		$this->app->singleton('reporter', function() {
