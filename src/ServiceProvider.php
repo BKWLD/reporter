@@ -2,6 +2,7 @@
 
 use Exception;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
+use Monolog\Logger;
 use Symfony\Component\Console\Input\ArgvInput;
 
 class ServiceProvider extends LaravelServiceProvider {
@@ -25,8 +26,8 @@ class ServiceProvider extends LaravelServiceProvider {
 			__DIR__.'/../../config/reporter.php' => config_path('reporter.php')
 		], 'config');
 
-		// Disable
-		if (!$this->app->make('config')->get('reporter.enable')) return;
+		// Disable based on config
+		if (!config('reporter.enable')) return;
 
 		// If the request path is being ignored, don't log anything
 		if (($path = request()->path())
@@ -35,33 +36,34 @@ class ServiceProvider extends LaravelServiceProvider {
 			return;
 		}
 
-		// If the app is running through console, listen for shutdown.  It's the only
-		// event that fires after artisan finishes
-		if ($this->app->runningInConsole()) {
-			$this->app->shutdown(function() {
-				$command = implode(' ', array_slice($_SERVER['argv'], 1));
-				app('reporter')->write(['command' => $command]);
-			});
+		// Listen for the http kernel to finish handling the request
+		$this->app['events']->listen('kernel.handled', function ($request, $response) {
 
-		// Listen for request to be done and all after() filters to have run
-		} else {
-			$this->app->finish(function($request, $response) {
-				app('reporter')->write([ 'request' => $request ]);
-			});
-		}
+			// Log an error
+			if ($response->exception) {
+				// $this->app['reporter']->write([
+				// 	'request' => $request,
+				// 	'exception' => $response->exception,
+				// ]);
 
-		// Add exceptions to what will be written by finish/shutdown
-		$this->app->error(function(Exception $exception) {
-			app('reporter')->exception($exception);
+			// Log a normal request
+			} else {
+				$this->app['reporter']->write([
+					'request' => $request,
+				]);
+			}
 		});
 
-		// Fatal errors abort finish/shutdown, so write the log immediately
-		$this->app->fatal(function(Exception $exception) {
-			app('reporter')->write(array(
-				'request' => request(),
-				'exception' => $exception
-			));
-		});
+		$handler = new Handlers\Forwarder($this->app['reporter'], Logger::ERROR);
+		$this->app['log']->getMonolog()->pushHandler($handler);
+
+
+
+		throw new Exception("Error Processing Request", 1)
+
+
+		/*
+
 
 		// Buffer other log messages
 		$levels = $this->app->make('config')->get('reporter.levels');
@@ -70,6 +72,7 @@ class ServiceProvider extends LaravelServiceProvider {
 				if (in_array($level, $levels)) $reporter->buffer($level, $message, $context);
 			});
 		}
+		*/
 	}
 
 	/**
@@ -83,12 +86,17 @@ class ServiceProvider extends LaravelServiceProvider {
 		$this->mergeConfigFrom(__DIR__.'/../config/reporter.php', 'reporter');
 
 		// Main reporter instance
-		$this->app->singleton('reporter', function() {
-			return new Reporter;
+		$this->app->singleton('reporter', function($app) {
+			return (new Reporter($app['reporter.monolog']))->boot();
+		});
+
+		// The reporter monolog instance
+		$this->app->singleton('reporter.monolog', function($app) {
+			return new Logger('reporter');
 		});
 
 		// Make a timer instance that can be resolved via the facade.
-		$this->app->singleton('reporter.timer', function() {
+		$this->app->singleton('reporter.timer', function($app) {
 			return new Processors\Timer();
 		});
 	}
@@ -101,6 +109,7 @@ class ServiceProvider extends LaravelServiceProvider {
 	public function provides() {
 		return [
 			'reporter',
+			'reporter.monolog',
 			'reporter.timer',
 		];
 	}
