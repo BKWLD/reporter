@@ -39,40 +39,30 @@ class ServiceProvider extends LaravelServiceProvider {
 		// Listen for the http kernel to finish handling the request
 		$this->app['events']->listen('kernel.handled', function ($request, $response) {
 
-			// Log an error
-			if ($response->exception) {
-				// $this->app['reporter']->write([
-				// 	'request' => $request,
-				// 	'exception' => $response->exception,
-				// ]);
+			// Exceptions will get caught by the log listener
+			if ($response->exception) return;
 
 			// Log a normal request
-			} else {
-				$this->app['reporter']->write([
-					'request' => $request,
-				]);
-			}
+			$this->app['reporter']->write([
+				'request' => $request,
+			]);
 		});
 
-		$handler = new Handlers\Forwarder($this->app['reporter'], Logger::ERROR);
-		$this->app['log']->getMonolog()->pushHandler($handler);
+		// Listen for Laravel to log errors or manual Log::info() (etc) calls
+		$this->app['events']->listen('illuminate.log', function($level, $message, $context) {
 
+			// Log exceptions
+			if (is_a($message, Exception::class)) {
+				$this->app['reporter']->write([
+					'request' => request(),
+					'exception' => $message,
+				]);
 
-
-		throw new Exception("Error Processing Request", 1)
-
-
-		/*
-
-
-		// Buffer other log messages
-		$levels = $this->app->make('config')->get('reporter.levels');
-		if (!empty($levels)) {
-			app('log')->listen(function($level, $message, $context) use ($reporter, $levels) {
-				if (in_array($level, $levels)) $reporter->buffer($level, $message, $context);
-			});
-		}
-		*/
+			// Log developer messages
+			} else if (($levels = config('reporter.levels')) && in_array($level, $levels)) {
+				$this->app['reporter']->buffer($level, $message, $context);
+			}
+		});
 	}
 
 	/**

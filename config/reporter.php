@@ -10,7 +10,7 @@
 	'style' => true,
 
 	// Laravel log levels to show to show
-	'levels' => array('debug', 'info', 'notice', 'warn'),
+	'levels' => ['debug', 'info', 'notice', 'warning'],
 
 	// A regex for URL paths to ignore.
 	// 'ignore' => '\.(jpg|png|gif)$',
