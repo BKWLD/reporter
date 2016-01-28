@@ -10,28 +10,31 @@ Reporter is a package for Laravel 4 that brings back functionality found in the 
 The output looks like:
 
 ```
-------------------------------------------------------------------------
-7/15/13 2:21:17 PM
+---------------------------------------------------------------------
+1/28/16 1:21:09 AM
 
-REQUEST:   /about?example=val
-TIME:      18.53ms
+REQUEST:   /admin/articles/19/edit?search=example
+TIME:      111.46ms
 TIMERS:    
-  content: 9.04ms
-MEMORY:    5 MB (PEAK: 5.25 MB)
+  example: 2.36ms
+MEMORY:    14 MB (PEAK: 14 MB)
 INPUT:     
-  example: val
-SQL:       2 queries
-  (0.66 ms) select * from `articles` where `visible` = 1 order by
-           `articles`.`created_at` desc limit 3
-  (0.62 ms) select * from `ticker_posts` where `visible` = 1 order by
-           `ticker_posts`.`created_at` desc
+  search: example
+SQL:       5 queries
+  (0.46 ms) select * from `admins` where `admins`.`id` = '1' limit 1
+  (0.30 ms) select * from `articles` where `articles`.`id` = '19' limit 1
+  (0.44 ms) select * from `images` where `images`.`imageable_id` in ('19') and
+            `images`.`imageable_type` = 'App\Article'
+  (0.49 ms) select * from `articles` where `articles`.`id` = '19' limit 1
+  (0.43 ms) select * from `images` where `images`.`imageable_id` in ('19') and
+           `images`.`imageable_type` = 'App\Article'
 
-------------------------------------------------------------------------
+INFO:      Hey, make sure to wear pants
 ```
 
 Or, if you have style turned on:
 
-![image](http://f.cl.ly/items/233e2H0V042S1L0v2r3m/Screen%20Shot%202013-07-15%20at%202.50.57%20PM.png)
+![image](http://yo.bkwld.com/2b173b2z0M1f/Image%202016-01-27%20at%205.22.04%20PM.png)
 
 Reporter also adds the ability to time blocks of code (as displayed in the examples "TIMERS" line).
 
