@@ -1,5 +1,7 @@
 <?php namespace Bkwld\Reporter;
 
+// Deps
+use DB;
 use Exception;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Monolog\Logger;
@@ -36,6 +38,9 @@ class ServiceProvider extends LaravelServiceProvider {
 			return;
 		}
 
+		// Turn on Query logging
+		DB::connection()->enableQueryLog();
+
 		// Listen for the http kernel to finish handling the request
 		$this->app['events']->listen('kernel.handled', function ($request, $response) {
 
@@ -63,6 +68,10 @@ class ServiceProvider extends LaravelServiceProvider {
 				$this->app['reporter']->buffer($level, $message, $context);
 			}
 		});
+
+		\Timer::start('example');
+		\Log::info('Hey, make sure to wear pants');
+		\Timer::stop('example');
 	}
 
 	/**
