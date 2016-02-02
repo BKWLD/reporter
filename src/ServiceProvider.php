@@ -45,7 +45,7 @@ class ServiceProvider extends LaravelServiceProvider {
 		$this->app['events']->listen('kernel.handled', function ($request, $response) {
 
 			// Exceptions will get caught by the log listener
-			if ($response->exception) return;
+			if (isset($response->exception)) return;
 
 			// Log a normal request
 			$this->app['reporter']->write([
