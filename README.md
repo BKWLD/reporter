@@ -1,6 +1,6 @@
 # Reporter
 
-Reporter is a package for Laravel 5 (versions 2.x) and Laravel 4 (versions 1.x) that brings back functionality found in the profiler of Laravel 3.  Instead of displaying output in the browser, it writes to the disk in a log file that you can watch in realtime with `tail -f` or an app like Mac's Console.  This adds some advantages over a browser based profiler:
+Reporter is a package for Laravel 5 (versions 3.x) and Laravel 4 (versions 2.x) that brings back functionality found in the profiler of Laravel 3.  Instead of displaying output in the browser, it writes to the disk in a log file that you can watch in realtime with `tail -f` or an app like Mac's Console.  This adds some advantages over a browser based profiler:
 
 * You can inspect AJAX requests
 * POST variables are logged
@@ -40,7 +40,7 @@ Reporter also adds the ability to time blocks of code (as displayed in the examp
 
 ## Installation
 
-1. Add Reporter to composer.json: `"bkwld/reporter": "~2.0",` and do a composer install.
+1. Add Reporter to composer.json: `"bkwld/reporter": "~3.0",` and do a composer install.
 2. Add `'Bkwld\Reporter\ServiceProvider',` to your app/config/app.php's providers array.
 3. If you plan to use timers, add `'Timer' => 'Bkwld\Reporter\Facades\Timer',` to the app/config/app.php's aliases array.
 
