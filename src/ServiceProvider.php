@@ -69,9 +69,6 @@ class ServiceProvider extends LaravelServiceProvider {
 			}
 		});
 
-		\Timer::start('example');
-		\Log::info('Hey, make sure to wear pants');
-		\Timer::stop('example');
 	}
 
 	/**
