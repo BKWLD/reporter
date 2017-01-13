@@ -1,10 +1,10 @@
 <?php return array(
 
 	// Toggle reporting on and off
-	'enable' => true,
+	'enable' => env('REPORTER_ENABLE', true),
 
 	// Also write logs to the error_log
-	'error_log' => false,
+	'error_log' => env('REPORTER_ERROR_LOG', false),
 
 	// Style the output using escaped codes
 	'style' => true,
