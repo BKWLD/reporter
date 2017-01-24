@@ -25,7 +25,7 @@ class ServiceProvider extends LaravelServiceProvider {
 
 		// Define config publishing
 		$this->publishes([
-			__DIR__.'/../../config/reporter.php' => config_path('reporter.php')
+			__DIR__.'/../config/reporter.php' => config_path('reporter.php')
 		], 'config');
 
 		// Disable based on config
