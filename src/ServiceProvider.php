@@ -3,6 +3,7 @@
 // Deps
 use DB;
 use Exception;
+use Illuminate\Foundation\Http\Events\RequestHandled;
 use Illuminate\Support\ServiceProvider as LaravelServiceProvider;
 use Monolog\Logger;
 use Symfony\Component\Console\Input\ArgvInput;
@@ -42,14 +43,14 @@ class ServiceProvider extends LaravelServiceProvider {
 		DB::connection()->enableQueryLog();
 
 		// Listen for the http kernel to finish handling the request
-		$this->app['events']->listen('kernel.handled', function ($request, $response) {
+		$this->app['events']->listen(RequestHandled::class, function(RequestHandled $event) {
 
 			// Exceptions will get caught by the log listener
-			if (isset($response->exception)) return;
+			if (isset($event->response->exception)) return;
 
 			// Log a normal request
 			$this->app['reporter']->write([
-				'request' => $request,
+				'request' => $event->request,
 			]);
 		});
 

@@ -9,7 +9,6 @@ use Monolog\Processor\MemoryUsageProcessor;
 use Monolog\Processor\MemoryPeakUsageProcessor;
 use Monolog\Processor\WebProcessor;
 use DB;
-use Input;
 use Timer;
 
 // Assemble stats and write them to the file
@@ -62,7 +61,7 @@ class Reporter {
 		}
 
 		// Add custom and built in processors
-		$this->logger->pushProcessor(Timer::getFacadeRoot());
+		$this->logger->pushProcessor(app('reporter.timer'));
 		$this->logger->pushProcessor(new MemoryUsageProcessor());
 		$this->logger->pushProcessor(new MemoryPeakUsageProcessor());
 		$this->logger->pushProcessor(new WebProcessor());
@@ -106,7 +105,7 @@ class Reporter {
 		}
 
 		// Default params
-		$defaults['input'] = Input::get();
+		$defaults['input'] = request()->input();
 		$defaults['logs'] = $this->buffered;
 
 		// Apply default params
